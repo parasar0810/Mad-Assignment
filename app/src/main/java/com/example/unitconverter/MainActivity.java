@@ -1,9 +1,13 @@
 package com.example.unitconverter;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -13,13 +17,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.appcompat.widget.Toolbar;
 
 import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
-    // The rest of your code remains the same
+
     private static final String TAG = "UnitConverter";
 
     private EditText valueEditText;
@@ -42,9 +48,16 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // Apply theme based on saved preferences
+        applyTheme();
+
         try {
             super.onCreate(savedInstanceState);
             setContentView(R.layout.activity_main);
+
+            // Set up toolbar
+            Toolbar toolbar = findViewById(R.id.toolbar);
+            setSupportActionBar(toolbar);
 
             Log.d(TAG, "Starting initialization");
 
@@ -89,7 +102,31 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void applyTheme() {
+        SharedPreferences sharedPreferences = getSharedPreferences("UnitConverterPrefs", MODE_PRIVATE);
+        int themeMode = sharedPreferences.getInt("theme_mode", AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+        AppCompatDelegate.setDefaultNightMode(themeMode);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_settings) {
+            // Open settings activity
+            Intent intent = new Intent(this, SettingsActivity.class);
+            startActivity(intent);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     private void setupListeners() {
+        // Code remains the same as before
         try {
             // Input value change listener
             valueEditText.addTextChangedListener(new TextWatcher() {
@@ -131,6 +168,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void performConversion() {
+        // Code remains the same as before
         try {
             String valueStr = valueEditText.getText().toString();
             if (valueStr.isEmpty()) {
